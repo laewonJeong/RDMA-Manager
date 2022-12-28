@@ -6,7 +6,7 @@
 
 #define port 40145
 #define num_of_node 3
-#define server_ip "192.168.0.106"
+#define server_ip "192.168.0.109"
 
 string node_domain[num_of_node];
 string node[num_of_node] = {server_ip,"192.168.0.107","192.168.0.108"};
