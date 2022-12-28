@@ -44,7 +44,7 @@ int main(int argc, char* argv[]){
 
     myRDMA myrdma;
     
-    myrdma.set_buffer(send_buffer,recv_buffer,num_of_node-1)
+    myrdma.set_buffer(send_buffer,recv_buffer,num_of_node-1);
     //myrdma.initialize_rdma_connection(my_ip.c_str(), node, num_of_node, port,send_buffer,recv_buffer);
  
     myrdma.create_rdma_info();
