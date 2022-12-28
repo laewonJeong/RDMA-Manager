@@ -244,9 +244,9 @@ void myRDMA::send_info_change_qp(){
                                                   read_rdma_info.find("rkey")->second));
             }
         }
-        cerr << "[ SUCCESS ]" << endl;
+        cerr << "[ SUCCESS ]" << endl;*/
     }
-    cerr << "Completely success" << endl;*/
+    cerr << "Completely success" << endl;
 }
 void myRDMA::create_rdma_info(){
     RDMA rdma;
