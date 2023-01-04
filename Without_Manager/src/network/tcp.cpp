@@ -73,19 +73,19 @@ int TCP::recv_msg(int ip){
    return str_len;
 }
 void TCP::server(string server[]){
-   serv_sock=socket(PF_INET, SOCK_STREAM, 0);
+   tcp->serv_sock=socket(PF_INET, SOCK_STREAM, 0);
    int opt = 1;
-   setsockopt(serv_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)); 
+   setsockopt(tcp->serv_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)); 
    memset(&serv_adr, 0, sizeof(serv_adr));
    serv_adr.sin_family=AF_INET;
    serv_adr.sin_addr.s_addr=htonl(INADDR_ANY);
    serv_adr.sin_port=htons(tcp->Port);
 
-   if(bind(serv_sock, (struct sockaddr*) &serv_adr, sizeof(serv_adr))==-1){
+   if(bind(tcp->serv_sock, (struct sockaddr*) &serv_adr, sizeof(serv_adr))==-1){
       std::cout << "bind() error" << std::endl;
       exit(1);
    }
-   if(listen(serv_sock, 5)==-1){
+   if(listen(tcp->serv_sock, 5)==-1){
       std::cout << "listen() error" << std::endl;
       exit(1);
    }
@@ -95,7 +95,7 @@ void TCP::server(string server[]){
          break;
       }
       clnt_adr_size=sizeof(clnt_adr);
-      clnt_sock=accept(serv_sock, (struct sockaddr*)&clnt_adr,(socklen_t*)&clnt_adr_size);
+      clnt_sock=accept(tcp->serv_sock, (struct sockaddr*)&clnt_adr,(socklen_t*)&clnt_adr_size);
       if(clnt_sock == -1){
          printf("%s와 accpet error\n", inet_ntoa(clnt_adr.sin_addr));
       }
@@ -167,4 +167,14 @@ map<string, string> TCP::read_rdma_info(int ip){
 
 int *TCP::client_sock(){
    return tcp->clnt_socks;
+}
+
+void TCP::close_sock(){
+   close(tcp->serv_sock);
+   for(int i=0;i<number_of_sock;i++){
+      close(tcp->clnt_socks[i]);
+      close(tcp->new_sock[i]);
+   }
+   tcp->clnt_cnt =0;
+
 }
