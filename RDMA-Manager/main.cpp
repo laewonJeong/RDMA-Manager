@@ -41,7 +41,9 @@ int main(int argc, char* argv[]){
     }
     cout << "Success" << endl;*/
 
-    tcp.connect_tcp(my_ip.c_str(), node, num_of_node, port);
+    myRDMA myrdma;
+    myrdma.initialize_rdma_connection(my_ip.c_str(), node, num_of_node, port, send_buffer,recv_buffer);
+    //tcp.connect_tcp(my_ip.c_str(), node, num_of_node, port);
 
     map<string, string> read_rdma_info;
     for(int i=0;i<num_of_node-1;i++){
