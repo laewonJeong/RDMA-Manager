@@ -23,6 +23,7 @@ void myRDMA::rdma_send(string msg, int i){
         //cerr << "send success" << endl;
         myrdma.connect_check = 1;
         cerr << "send failed" << endl;
+        exit(1);
     }
     
 }

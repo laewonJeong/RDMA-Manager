@@ -37,11 +37,10 @@ int main(int argc, char* argv[]){
     }
     cout << "Success" << endl;*/
 
-    myRDMA myrdma;
     
     while(1){
+        myRDMA myrdma;
         myrdma.initialize_rdma_connection(my_ip.c_str(), node, num_of_node, port,send_buffer,recv_buffer);
-        cerr << myrdma.check_connect() << endl;
         myrdma.create_rdma_info();
         myrdma.send_info_change_qp();
 
@@ -56,11 +55,14 @@ int main(int argc, char* argv[]){
             for(int i=0;i<num_of_node-1;i++){
                 printf("recv_buffer[%d]: %s\n", i, recv_buffer[i]); 
             }
+            //cout << "check_connect: " <<myrdma.check_connect() << endl;
             if(myrdma.check_connect() == 1){
                 break;
             }
+            
             sleep(2);
         }
+        tcp.close_sock();
         myrdma.exit_rdma();
         cerr << "Connection FAILED... Restarting..." << endl;
     }

@@ -289,5 +289,7 @@ void RDMA::post_rdma_recv(struct ibv_qp *qp, struct ibv_mr *mr, struct ibv_cq *c
 
     struct ibv_recv_wr *bad_wr;
 
-    ibv_post_recv(qp, &recv_wr, &bad_wr);
+    if(ibv_post_recv(qp, &recv_wr, &bad_wr)){
+      fprintf(stderr, "Error, ibv_post_recv() failed\n");
+    }
 }

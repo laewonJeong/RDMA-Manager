@@ -9,13 +9,13 @@
 using namespace std;
 class myRDMA{
     public:
-        void rdma_send(string msg, int i);
+        int rdma_send(string msg, int i);
         void rdma_send_with_imm(string msg, int i);
         void rdma_write(string msg, int i);
         void rdma_write_with_imm(string msg, int i);
         void rdma_send_recv(int i);
         void rdma_write_recv(int i);
-        void rdma_send_msg(string opcode, string msg);
+        int rdma_send_msg(string opcode, string msg);
         void rdma_recv_msg(string opcode, int i=0);
         void recv_t(string opcode);
         void rdma_one_to_many_send_msg(string opcode, string msg);
