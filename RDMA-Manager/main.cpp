@@ -44,7 +44,7 @@ int main(int argc, char* argv[]){
     tcp.connect_tcp(my_ip.c_str(), node, num_of_node, port);
 
     map<string, string> read_rdma_info;
-    for(int i=0;i<myrdma.connect_num;i++){
+    for(int i=0;i<num_of_node-1;i++){
         read_rdma_info = tcp.read_rdma_info(myrdma.sock_idx[i]);
         cout << read_rdma_info.find("addr")->first << " " << read_rdma_info.find("addr")->second << endl;
         cout << read_rdma_info.find("len")->first << " " << read_rdma_info.find("len")->second << endl;
