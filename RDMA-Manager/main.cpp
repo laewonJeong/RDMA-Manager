@@ -6,7 +6,7 @@
 
 #define port 40145
 #define num_of_node 3
-#define server_ip "192.168.0.109"
+#define server_ip "192.168.0.100"
 
 string node_domain[num_of_node];
 string node[num_of_node] = {server_ip,"192.168.0.107","192.168.0.108"};
@@ -30,8 +30,8 @@ int main(int argc, char* argv[]){
     TCP tcp;
 
     cout << "check my ip" << endl;
-    my_ip = "192.168.0.109";
-    cout << "finish! this pod's ip is " << my_ip << endl;
+    my_ip = argv[1];
+    cout << "finish! this node's ip is " << my_ip << endl;
 
     /*cout << "Changing domain to ip ..." << endl;
     for(int i = 0 ;i < num_of_node;i++){
