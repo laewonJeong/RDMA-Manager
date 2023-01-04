@@ -15,6 +15,7 @@ string my_ip;
 char send_buffer[num_of_node][buf_size];
 char recv_buffer[num_of_node][buf_size];
 
+using namespace std;
 bool is_server(string ip){
     if(ip == server_ip)
         return true;
@@ -63,7 +64,7 @@ int main(int argc, char* argv[]){
     cerr << "====================================================" << endl;
     
 
-    myrdma.exit_rdma();
+    //myrdma.exit_rdma();
   
     return 0;
 }
