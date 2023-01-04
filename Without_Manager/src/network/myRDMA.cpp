@@ -138,8 +138,8 @@ void myRDMA::recv_t(string opcode){
     std::vector<std::thread> worker;
     if (opcode == "send_with_imm" || opcode == "write_with_imm" || opcode == "send"){
         for(int i=0;i<myrdma.connect_num;i++){
-            //worker.push_back(std::thread(&myRDMA::rdma_send_recv,myRDMA(),i));
-            myRDMA::rdma_send_recv(i);
+            worker.push_back(std::thread(&myRDMA::rdma_send_recv,myRDMA(),i));
+        
         }
     }
     else if(opcode == "write"){
@@ -164,9 +164,8 @@ void myRDMA::rdma_comm(string opcode, string msg){;
 
     RDMA rdma;
     for(int i=0;i<myrdma.connect_num;i++){
-    if(!rdma.pollCompletion(get<3>(myrdma.rdma_info[0][i])))
-        //cerr << "send success" << endl;
-        cerr << "send failed" << endl;
+        if(!rdma.pollCompletion(get<3>(myrdma.rdma_info[0][i])))
+            cerr << "send failed" << endl;
     }
     //snd_msg.join();
 }
