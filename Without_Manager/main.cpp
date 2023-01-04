@@ -3,10 +3,10 @@
 
 #define port 40145
 #define num_of_node 2
-#define server_ip "192.168.1.100" //"pod-a.svc-k8s-rdma"
+#define server_ip "192.168.0.100" //"pod-a.svc-k8s-rdma"
 
 string node_domain[num_of_node] = {server_ip,"pod-b.svc-k8s-rdma"};
-string node[num_of_node] = {server_ip, "192.168.1.107"};
+string node[num_of_node] = {server_ip, "192.168.0.107"};
 string my_ip;
 
 char send_buffer[num_of_node][buf_size];
