@@ -202,7 +202,7 @@ void myRDMA::send_info_change_qp(){
     //Send RDMA info
     for(int k = 0;k<2;k++){
         int *clnt_socks = tcp.client_sock();
-        cerr << "Sending rdma info[" << k << "]... ";
+        //cerr << "Sending rdma info[" << k << "]... ";
         if(k==0){
             for(int idx=0; idx < myrdma.connect_num+1; idx++){
                 if(clnt_socks[idx]!=0){
@@ -210,7 +210,7 @@ void myRDMA::send_info_change_qp(){
                 }
             }
         }
-        for(int j=0;j<myrdma.connect_num;j++){
+        /*for(int j=0;j<myrdma.connect_num;j++){
             std::ostringstream oss;
 
             if(k==0)
@@ -244,7 +244,17 @@ void myRDMA::send_info_change_qp(){
                                                   read_rdma_info.find("rkey")->second));
             }
         }
-        cerr << "[ SUCCESS ]" << endl;
+        cerr << "[ SUCCESS ]" << endl;*/
+    }
+    map<string, string> read_rdma_info;
+    for(int i=0;i<myrdma.connect_num;i++){
+        read_rdma_info = tcp.read_rdma_info(myrdma.sock_idx[i]);
+        cout << read_rdma_info.find("addr")->first << " " << read_rdma_info.find("addr")->second << endl;
+        cout << read_rdma_info.find("len")->first << " " << read_rdma_info.find("len")->second << endl;
+        cout << read_rdma_info.find("lkey")->first << " " << read_rdma_info.find("lkey")->second << endl;
+        cout << read_rdma_info.find("rkey")->first << " " << read_rdma_info.find("rkey")->second << endl;
+        cout << read_rdma_info.find("lid")->first << " " << read_rdma_info.find("lid")->second << endl;
+        cout << read_rdma_info.find("qp_num")->first << " " << read_rdma_info.find("qp_num")->second << endl;
     }
     cerr << "Completely success" << endl;
 }
