@@ -231,7 +231,7 @@ void myRDMA::send_info_change_qp(){
         }
         cerr << "[ SUCCESS ]" <<endl;
         //Read RDMA info
-        /*map<string, string> read_rdma_info;
+        map<string, string> read_rdma_info;
         cerr << "Changing queue pair...  ";
         for(int i=0;i<myrdma.connect_num;i++){
             read_rdma_info = tcp.read_rdma_info(myrdma.sock_idx[i]);
@@ -247,7 +247,7 @@ void myRDMA::send_info_change_qp(){
                                                   read_rdma_info.find("rkey")->second));
             }
         }
-        cerr << "[ SUCCESS ]" << endl;*/
+        cerr << "[ SUCCESS ]" << endl;
     }
     cerr << "Completely success" << endl;
 }
