@@ -94,15 +94,15 @@ void TCP::server(string server[]){
          break;
       }
       clnt_adr_size=sizeof(clnt_adr);
-      tcp->clnt_sock=accept(tcp->serv_sock, (struct sockaddr*)&clnt_adr,(socklen_t*)&clnt_adr_size);
-      if(tcp->clnt_sock == -1){
+      clnt_sock=accept(tcp->serv_sock, (struct sockaddr*)&clnt_adr,(socklen_t*)&clnt_adr_size);
+      if(clnt_sock == -1){
          printf("%s와 accpet error\n", inet_ntoa(clnt_adr.sin_addr));
       }
       else{
          mutx.lock();
          for(int i=0;i<tcp->num_of_server;i++){
             if(inet_ntoa(clnt_adr.sin_addr) == server[i]){
-               tcp->clnt_socks[i] = tcp->clnt_sock;
+               tcp->clnt_socks[i] = clnt_sock;
             }
          }
          tcp->clnt_cnt++;
@@ -163,7 +163,7 @@ map<string, string> TCP::read_rdma_info(int ip){
     return info;
 }
 void TCP::close_sock(){
-   close(tcp->clnt_sock);
+   close(clnt_sock);
    close(tcp->serv_sock);
    close(sock);
    for(int i=0;i<tcp->num_of_server-1;i++){
