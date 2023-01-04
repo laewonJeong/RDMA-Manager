@@ -19,9 +19,11 @@ void myRDMA::rdma_send(string msg, int i){
     
     rdma.post_rdma_send(get<4>(myrdma.rdma_info[0][i]), get<5>(myrdma.rdma_info[0][i]), myrdma.send_buffer[i], 
                                 sizeof(myrdma.send_buffer[i]), myrdma.qp_key[i].first, myrdma.qp_key[i].second);
-    if(!rdma.pollCompletion(get<3>(myrdma.rdma_info[0][i])))
+    if(!rdma.pollCompletion(get<3>(myrdma.rdma_info[0][i]))){
         //cerr << "send success" << endl;
+        myrdma.connect_check = 1;
         cerr << "send failed" << endl;
+    }
     
 }
 

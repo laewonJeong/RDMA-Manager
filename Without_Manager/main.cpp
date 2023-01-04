@@ -56,6 +56,9 @@ int main(int argc, char* argv[]){
             for(int i=0;i<num_of_node-1;i++){
                 printf("recv_buffer[%d]: %s\n", i, recv_buffer[i]); 
             }
+            if(myrdma.connect_check == 1){
+                break;
+            }
             sleep(2);
         }
         myrdma.exit_rdma();
