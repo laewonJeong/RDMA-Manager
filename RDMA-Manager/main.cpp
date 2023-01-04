@@ -46,12 +46,12 @@ int main(int argc, char* argv[]){
     map<string, string> read_rdma_info;
     for(int i=0;i<myrdma.connect_num;i++){
         read_rdma_info = tcp.read_rdma_info(myrdma.sock_idx[i]);
-        cout << read_rdma_info.find("addr") << endl;
-        cout << read_rdma_info.find("len") << endl;
-        cout << read_rdma_info.find("lkey") << endl;
-        cout << read_rdma_info.find("rkey") << endl;
-        cout << read_rdma_info.find("lid") << endl;
-        cout << read_rdma_info.find("qp_num") << endl;
+        cout << read_rdma_info.find("addr")->first << " " << read_rdma_info.find("addr")->second << endl;
+        cout << read_rdma_info.find("len")->first << " " << read_rdma_info.find("len")->second << endl;
+        cout << read_rdma_info.find("lkey")->first << " " << read_rdma_info.find("lkey")->second << endl;
+        cout << read_rdma_info.find("rkey")->first << " " << read_rdma_info.find("rkey")->second << endl;
+        cout << read_rdma_info.find("lid")->first << " " << read_rdma_info.find("lid")->second << endl;
+        cout << read_rdma_info.find("qp_num")->first << " " << read_rdma_info.find("qp_num")->second << endl;
     }
 
     //myRDMA myrdma;
