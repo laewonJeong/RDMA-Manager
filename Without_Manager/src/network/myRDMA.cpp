@@ -10,7 +10,7 @@ char* change(string temp){
   strcpy(stc, temp.c_str());
   return stc;
 }
-int myRDMA::rdma_send(string msg, int i){
+void myRDMA::rdma_send(string msg, int i){
     RDMA rdma;
     if (msg.size() > 67108863)
         msg.replace(67108864,67108864, "\0");
@@ -21,11 +21,11 @@ int myRDMA::rdma_send(string msg, int i){
                                 sizeof(myrdma.send_buffer[i]), myrdma.qp_key[i].first, myrdma.qp_key[i].second);
     if(!rdma.pollCompletion(get<3>(myrdma.rdma_info[0][i]))){
         //cerr << "send success" << endl;
-        myrdma.connect_check = 1;
-        //cerr << myrdma.connect_check << endl;
+        //myrdma.connect_check = 1;
         cerr << "send failed" << endl;
+        exit(1);
     }
-    return myrdma.connect_check;
+    
 }
 
 void myRDMA::rdma_send_with_imm(string msg, int i){
@@ -79,9 +79,8 @@ void myRDMA::rdma_send_recv(int i){
 
     rdma.post_rdma_recv(get<4>(myrdma.rdma_info[1][i]), get<5>(myrdma.rdma_info[1][i]), 
                         get<3>(myrdma.rdma_info[1][i]),myrdma.recv_buffer[i], sizeof(myrdma.recv_buffer[i]));
-    if(!rdma.pollCompletion(get<3>(myrdma.rdma_info[1][i]))){
+    if(!rdma.pollCompletion(get<3>(myrdma.rdma_info[1][i])))
         cerr << "recv failed" << endl;
-    }
     else{
         cerr << strlen(myrdma.recv_buffer[i])/(1024*1024) <<"Mb data ";
         cerr << "receive success" << endl;
@@ -95,37 +94,30 @@ void myRDMA::rdma_write_recv(int i){
     cerr << "recv success" << endl;
 }
 
-int myRDMA::rdma_send_msg(string opcode, string msg){
-    int tmp = 0;
+void myRDMA::rdma_send_msg(string opcode, string msg){
     if (opcode == "send_with_imm"){
         cerr << "rdma_send_with_imm run" <<endl;
         for(int i=0;i<myrdma.connect_num;i++){
             myRDMA::rdma_send_with_imm(msg, i);
         }
-        return 0;
     }
     else if(opcode == "write"){
         cerr << "rdma_write run" << endl;
         for(int i=0;i<myrdma.connect_num;i++){
             myRDMA::rdma_write(msg, i);
         }
-        return 0;
     }
     else if(opcode == "write_with_imm"){
         cerr << "write_with_imm_rdma run" <<endl;
         for(int i=0;i<myrdma.connect_num;i++){
             myRDMA::rdma_write_with_imm(msg, i);
         }
-        return 0;
     }
     else if(opcode == "send"){
         cerr << "rdma_send run" <<endl;
         for(int i=0;i<myrdma.connect_num;i++){
-            if(tmp == 0){
-                tmp = myRDMA::rdma_send(msg, i);
-            }
+            myRDMA::rdma_send(msg, i);
         }
-        return tmp;
     }
     else{
         cerr << "rdma_send_msg opcode error" << endl;
@@ -148,9 +140,7 @@ void myRDMA::recv_t(string opcode){
     std::vector<std::thread> worker;
     if (opcode == "send_with_imm" || opcode == "write_with_imm" || opcode == "send"){
         for(int i=0;i<myrdma.connect_num;i++){
-            //worker.push_back(std::thread(&myRDMA::rdma_send_recv,myRDMA(),i));
-            myRDMA::rdma_send_recv(i);
-            
+            worker.push_back(std::thread(&myRDMA::rdma_send_recv,myRDMA(),i));
         }
     }
     else if(opcode == "write"){
@@ -163,18 +153,15 @@ void myRDMA::recv_t(string opcode){
         exit(1);
     }
     for(int i=0;i<myrdma.connect_num;i++){
-        //worker[i].join();
+        worker[i].join();
     }
 }
 
 void myRDMA::rdma_comm(string opcode, string msg){;
-    //thread snd_msg = thread(&myRDMA::rdma_send_msg,myRDMA(),opcode,msg);
-    int i;
-    i = myRDMA::rdma_send_msg(opcode,msg);
-    if(i == 0){
-        myRDMA::recv_t(opcode);
-    }
-    //snd_msg.join();
+    thread snd_msg = thread(&myRDMA::rdma_send_msg,myRDMA(),opcode,msg);
+    myRDMA::recv_t(opcode);
+
+    snd_msg.join();
 }
 
 void myRDMA::rdma_one_to_many_send_msg(string opcode, string msg){
@@ -235,16 +222,16 @@ void myRDMA::send_info_change_qp(){
                 oss << &myrdma.recv_buffer[j];
             
             tcp.send_msg(change(oss.str()+"\n"),myrdma.sock_idx[j]);
-            tcp.send_msg(change(to_string(get<5>(myrdma.rdma_info[k][j])->length)+"\n"),myrdma.sock_idx[j]);
-            tcp.send_msg(change(to_string(get<5>(myrdma.rdma_info[k][j])->lkey)+"\n"),myrdma.sock_idx[j]);
-            tcp.send_msg(change(to_string(get<5>(myrdma.rdma_info[k][j])->rkey)+"\n"),myrdma.sock_idx[j]);
-            tcp.send_msg(change(to_string(get<6>(myrdma.rdma_info[k][j]))+"\n"),myrdma.sock_idx[j]);
-            tcp.send_msg(change(to_string(get<7>(myrdma.rdma_info[k][j]))+"\n"),myrdma.sock_idx[j]);
+            tcp.send_msg(change(to_string(get<5>(myrdma.rdma_info[k][j])->length)+"\n"),myrdma.sock_idx[0]);
+            tcp.send_msg(change(to_string(get<5>(myrdma.rdma_info[k][j])->lkey)+"\n"),myrdma.sock_idx[0]);
+            tcp.send_msg(change(to_string(get<5>(myrdma.rdma_info[k][j])->rkey)+"\n"),myrdma.sock_idx[0]);
+            tcp.send_msg(change(to_string(get<6>(myrdma.rdma_info[k][j]))+"\n"),myrdma.sock_idx[0]);
+            tcp.send_msg(change(to_string(get<7>(myrdma.rdma_info[k][j]))+"\n"),myrdma.sock_idx[0]);
             
         }
         cerr << "[ SUCCESS ]" <<endl;
         //Read RDMA info
-        map<string, string> read_rdma_info;
+        /*map<string, string> read_rdma_info;
         cerr << "Changing queue pair...  ";
         for(int i=0;i<myrdma.connect_num;i++){
             read_rdma_info = tcp.read_rdma_info(myrdma.sock_idx[i]);
@@ -260,7 +247,7 @@ void myRDMA::send_info_change_qp(){
                                                   read_rdma_info.find("rkey")->second));
             }
         }
-        cerr << "[ SUCCESS ]" << endl;
+        cerr << "[ SUCCESS ]" << endl;*/
     }
     cerr << "Completely success" << endl;
 }
@@ -298,6 +285,7 @@ void myRDMA::create_rdma_info(){
                                                     buf[i], sizeof(buf[i]));
             uint16_t lid = rdma.getLocalId(context, PORT);
             uint32_t qp_num = rdma.getQueuePairNumber(qp);
+
             myrdma.rdma_info[j].push_back(make_tuple(context,protection_domain,cq_size,
                                             completion_queue,qp,mr,lid,qp_num));
         }
@@ -316,10 +304,6 @@ void myRDMA::initialize_rdma_connection(const char* ip, string server[], int num
     myrdma.send_buffer = &send[0];
     myrdma.recv_buffer = &recv[0];
     myrdma.connect_num = number_of_server - 1;
-    myrdma.connect_check = 0;
-}
-int myRDMA::check_connect(){
-    return myrdma.connect_check;
 }
 void myRDMA::exit_rdma(){
     for(int j=0;j<2;j++){
@@ -331,15 +315,6 @@ void myRDMA::exit_rdma(){
             ibv_close_device(get<0>(myrdma.rdma_info[j][i]));
         }
     }
-    for(int j=0;j<2;j++){
-        for(int i =0; i<myrdma.connect_num;i++){
-            myrdma.rdma_info[j].pop_back();
-        }
-    }
-    for(int i =0; i<myrdma.connect_num;i++){
-        myrdma.qp_key.pop_back();
-    }
-
 }
 
 

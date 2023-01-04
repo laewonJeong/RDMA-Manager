@@ -9,13 +9,13 @@
 using namespace std;
 class myRDMA{
     public:
-        int rdma_send(string msg, int i);
+        void rdma_send(string msg, int i);
         void rdma_send_with_imm(string msg, int i);
         void rdma_write(string msg, int i);
         void rdma_write_with_imm(string msg, int i);
         void rdma_send_recv(int i);
         void rdma_write_recv(int i);
-        int rdma_send_msg(string opcode, string msg);
+        void rdma_send_msg(string opcode, string msg);
         void rdma_recv_msg(string opcode, int i=0);
         void recv_t(string opcode);
         void rdma_one_to_many_send_msg(string opcode, string msg);
@@ -29,7 +29,6 @@ class myRDMA{
         void initialize_rdma_connection(const char* ip, string server[], 
                                         int number_of_server, int Port,
                                         char send[][buf_size], char recv[][buf_size]);
-        int check_connect();
         void exit_rdma();
     private:
         std::vector<tuple<struct ibv_context*, struct ibv_pd*, 
@@ -41,5 +40,4 @@ class myRDMA{
         char (*recv_buffer)[buf_size];
         vector<int> sock_idx;
         int connect_num;
-        int connect_check;
 };

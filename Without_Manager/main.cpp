@@ -56,13 +56,13 @@ int main(int argc, char* argv[]){
                 printf("recv_buffer[%d]: %s\n", i, recv_buffer[i]); 
             }
             //cout << "check_connect: " <<myrdma.check_connect() << endl;
-            if(myrdma.check_connect() == 1){
+            /*if(myrdma.check_connect() == 1){
                 break;
-            }
+            }*/
             
             sleep(2);
         }
-        tcp.close_sock();
+        //tcp.close_sock();
         myrdma.exit_rdma();
         cerr << "Connection FAILED... Restarting..." << endl;
     }
