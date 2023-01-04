@@ -10,7 +10,7 @@ char* change(string temp){
   strcpy(stc, temp.c_str());
   return stc;
 }
-int myRDMA::rdma_send(string msg, int i){
+void myRDMA::rdma_send(string msg, int i){
     RDMA rdma;
     if (msg.size() > 67108863)
         msg.replace(67108864,67108864, "\0");
@@ -24,7 +24,6 @@ int myRDMA::rdma_send(string msg, int i){
         myrdma.connect_check = 1;
         cerr << "send failed" << endl;
     }
-    return myrdma.connect_check;
     
 }
 
@@ -94,7 +93,7 @@ void myRDMA::rdma_write_recv(int i){
     cerr << "recv success" << endl;
 }
 
-int myRDMA::rdma_send_msg(string opcode, string msg){
+void myRDMA::rdma_send_msg(string opcode, string msg){
     if (opcode == "send_with_imm"){
         cerr << "rdma_send_with_imm run" <<endl;
         for(int i=0;i<myrdma.connect_num;i++){
@@ -114,12 +113,10 @@ int myRDMA::rdma_send_msg(string opcode, string msg){
         }
     }
     else if(opcode == "send"){
-        int tmp =0;
         cerr << "rdma_send run" <<endl;
         for(int i=0;i<myrdma.connect_num;i++){
-            tmp = myRDMA::rdma_send(msg, i);
+            myRDMA::rdma_send(msg, i);
         }
-        return tmp;
     }
     else{
         cerr << "rdma_send_msg opcode error" << endl;
@@ -161,11 +158,9 @@ void myRDMA::recv_t(string opcode){
 
 void myRDMA::rdma_comm(string opcode, string msg){;
     //thread snd_msg = thread(&myRDMA::rdma_send_msg,myRDMA(),opcode,msg);
-    int i;
-    i = myRDMA::rdma_send_msg(opcode,msg);
-    if(i==0){
-        myRDMA::recv_t(opcode);
-    }
+    myRDMA::rdma_send_msg(opcode,msg);
+    myRDMA::recv_t(opcode);
+
     //snd_msg.join();
 }
 
