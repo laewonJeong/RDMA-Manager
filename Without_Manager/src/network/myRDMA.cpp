@@ -121,11 +121,13 @@ void myRDMA::rdma_send_msg(string opcode, string msg){
         cerr << "rdma_send_msg opcode error" << endl;
         exit(1);
     }
+    
     RDMA rdma;
     for(int i=0;i<myrdma.connect_num;i++){
         if(!rdma.pollCompletion(get<3>(myrdma.rdma_info[0][i]))){
             myrdma.connect_check =1;
             cerr << "send failed" << endl;
+            exit(1);
         }
     }
 }
@@ -163,14 +165,15 @@ void myRDMA::recv_t(string opcode){
 }
 
 void myRDMA::rdma_comm(string opcode, string msg){;
-    //thread snd_msg = thread(&myRDMA::rdma_send_msg,myRDMA(),opcode,msg);
-    myRDMA::rdma_send_msg(opcode,msg);
+    //myRDMA::rdma_send_msg(opcode,msg);
+    thread snd_msg = thread(&myRDMA::rdma_send_msg,myRDMA(),opcode,msg);
+    //snd_msg.join();
     if(myrdma.connect_check == 0){
         myRDMA::recv_t(opcode);
     }
-
     
-    //snd_msg.join();
+    
+    snd_msg.join();
 }
 
 void myRDMA::rdma_one_to_many_send_msg(string opcode, string msg){
