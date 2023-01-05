@@ -127,6 +127,7 @@ void myRDMA::rdma_send_msg(string opcode, string msg){
         if(!rdma.pollCompletion(get<3>(myrdma.rdma_info[0][i]))){
             myrdma.connect_check =1;
             cerr << "send failed" << endl;
+            cerr << "Connection FAILED... Restarting..." << endl;
             exit(1);
         }
     }

@@ -3,10 +3,10 @@
 
 #define port 40145
 #define num_of_node 2
-#define server_ip "192.168.1.100"//"pod-a.svc-k8s-rdma"
+#define server_ip "pod-a.svc-k8s-rdma"
 
 string node_domain[num_of_node] = {server_ip,"pod-b.svc-k8s-rdma"};
-string node[num_of_node] = {server_ip, "192.168.1.107"};
+string node[num_of_node]; //= {server_ip, "192.168.1.107"};
 string my_ip;
 
 char send_buffer[num_of_node][buf_size];
@@ -25,8 +25,8 @@ int main(int argc, char* argv[]){
     }
    
     TCP tcp;
-    my_ip = argv[1];
-    /*cout << "check my ip" << endl;
+    //my_ip = argv[1];
+    cout << "check my ip" << endl;
     my_ip = tcp.check_my_ip();
     cout << "finish! this pod's ip is " <<my_ip << endl;
 
@@ -35,8 +35,7 @@ int main(int argc, char* argv[]){
         node[i]=tcp.domain_to_ip(node_domain[i]);
         cout << node_domain[i] << " ----> " << node[i] <<endl;
     }
-    cout << "Success" << endl;*/
-
+    cout << "Success" << endl;
     
     while(1){
         myRDMA myrdma;
@@ -49,20 +48,21 @@ int main(int argc, char* argv[]){
         string msg;
         string opcode = "send"; //send, send_with_imm, write, write_with_imm
 
+        int i = 0;
         while(1){
             msg = "[ " + my_ip + " ] Hello k8s RDMA";
             myrdma.rdma_comm(opcode, msg);
             for(int i=0;i<num_of_node-1;i++){
                 printf("recv_buffer[%d]: %s\n", i, recv_buffer[i]); 
             }
-            if(myrdma.check_connect() == 1){
-                break;
-            }
             sleep(2);
+            i++;
+            if(i==5 && my_ip != node[0]){
+                exit(1);
+            }
         }
         tcp.close_sock();
         myrdma.exit_rdma();
-        cerr << "Connection FAILED... Restarting..." << endl;
     }
     sleep(5);
     while(1){
